@@ -1,0 +1,50 @@
+#include <SoftwareSerial.h>
+#include<Servo.h>         
+
+Servo esc; 
+SoftwareSerial hc12(2, 3); //RX, TX
+
+int thr, ail, ele, rud;
+
+void setup()
+{
+esc.attach(10);
+pinMode (A0, INPUT); //these are analog pins that take data from potentiometer and/or joystick module
+pinMode (A1, INPUT);
+pinMode (A6, INPUT);
+pinMode (A7, INPUT);
+pinMode (A2, INPUT);
+pinMode (13, OUTPUT); //this is digital pin where a LED light can be attached to check if data is being transmitted. 
+ 
+Serial.begin(9600);
+hc12.begin(9600);
+}
+
+void loop()
+{
+  ele=map(analogRead(A0), 0, 1023, 0, 180);
+  rud=map(analogRead(A1), 0, 1023, 0, 180);
+  thr=map(analogRead(A7), 0, 1023, 0, 180); //throttle is set for functioning with joystick. The line would be thr=map(analogRead(A7), 0,1023,500,2000); if I use a potentiometer. 
+  ail=map(analogRead(A5), 0, 1023, 0, 180);
+
+  hc12.print(thr); //print the command to the transreceiver link 
+  hc12.print(",");
+  hc12.print(ail);
+  hc12.print(",");
+  hc12.print(ele);
+  hc12.print(",");
+  hc12.print(rud);
+  hc12.println("");
+ 
+  Serial.print(thr); //print command to the serial port
+  Serial.print(",");
+  Serial.print(ail);
+  Serial.print(",");
+  Serial.print(ele);
+  Serial.print(",");
+  Serial.print(rud);
+  Serial.println("");
+
+
+delay(100);  
+}
